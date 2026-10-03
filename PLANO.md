@@ -77,8 +77,8 @@ As tarefas estão em ordem e devem ser feitas uma depois da outra, porque alguma
 - **O que fazer:** calcular a casa vencedora com `useMemo` e envolver o componente `Casa` com `memo`.
 - **Commit:** `perf: memoriza resultado do quiz e cards das casas`
 
-### Tarefa 3: Tema com styled-components
-- **Arquivos:** `package.json`, `package-lock.json`, `src/main.jsx`, `src/App.jsx`, `src/styles/tema.js` (novo), `src/styles/Global.js` (novo), `src/index.css` (apagar), `src/App.css` (apagar)
+### ✅ Tarefa 3: Tema com styled-components
+- **Arquivos:** `package.json`, `package-lock.json`, `index.html`, `src/main.jsx`, `src/App.jsx`, `src/styles/tema.js` (novo), `src/styles/Global.js` (novo), `src/index.css` (apagar), `src/App.css` (apagar)
 - **O que fazer:**
   - Instalar com `npm i styled-components`.
   - Criar um tema com as cores e a fonte do projeto, por exemplo a fonte *Cinzel* do Google Fonts e um fundo escuro.
