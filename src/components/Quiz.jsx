@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { perguntas } from './perguntas';
+import { perguntas } from '../data/perguntas';
 
 function Quiz({ casas }) {
   const [indice, setIndice] = useState(0);   // pergunta atual

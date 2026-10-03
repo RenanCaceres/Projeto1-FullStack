@@ -1,9 +1,8 @@
 import './App.css';
 import { useEffect, useState } from 'react';
-import { getCasas } from './hogwartsService';
-import Casa from './Casas';
-import Quiz from './Quiz';
-import casasHeader from './assets/casasHeader.png';
+import { getCasas } from './services/hogwartsService';
+import Casa from './components/Casa';
+import Quiz from './components/Quiz';
 
 function App() {
   const [casas, setCasas] = useState([]);
@@ -17,7 +16,6 @@ function App() {
   return (
     <div className="App">
       <header className="App-Header">
-        {/*  <img src={casasHeader} className="App-banner" alt="banner" /> */}
       </header>
 
       <div>
