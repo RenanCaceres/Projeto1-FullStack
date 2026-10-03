@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { useMemo, useReducer } from 'react';
 import { perguntas } from '../data/perguntas';
 
 const estadoInicial = {
@@ -34,11 +34,15 @@ function Quiz({ casas }) {
     dispatch({ type: 'REINICIAR' });
   }
 
+  // só recalcula quando a pontuação muda
+  const vencedora = useMemo(() => {
+    const nomes = Object.keys(pontos);
+    if (nomes.length === 0) return null;
+    return nomes.reduce((a, b) => (pontos[a] >= pontos[b] ? a : b));
+  }, [pontos]);
+
   // acabaram as perguntas: mostra o resultado
   if (indice >= perguntas.length) {
-    const vencedora = Object.keys(pontos).reduce((a, b) =>
-      pontos[a] >= pontos[b] ? a : b
-    );
     const casa = casas.find(c => c.name === vencedora);
 
     return (

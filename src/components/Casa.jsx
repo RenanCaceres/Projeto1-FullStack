@@ -1,12 +1,12 @@
-function Casa(props){
+import { memo } from 'react';
 
-    return(
-        <p>
-            <strong>{props.data.name} </strong> - Fundador: {props.data.founder}
-
-        </p>
- 
-)
+// memo: só re-renderiza se os dados da casa mudarem
+function Casa({ data }) {
+  return (
+    <p>
+      <strong>{data.name}</strong> - Fundador: {data.founder}
+    </p>
+  );
 }
 
-export default Casa;
+export default memo(Casa);
