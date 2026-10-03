@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { getCasas } from './services/hogwartsService';
 import Casa from './components/Casa';
@@ -19,14 +19,35 @@ const Secao = styled.section`
   border-radius: ${({ theme }) => theme.raio};
 `;
 
+const Aviso = styled.p`
+  color: ${({ theme }) => theme.cores.textoSuave};
+`;
+
 function App() {
   const [casas, setCasas] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
 
-  useEffect(() => {
+  const buscarCasas = useCallback(() => {
     getCasas()
       .then((data) => setCasas(data))
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        setErro('Não foi possível carregar as casas. Verifique sua conexão.');
+      })
+      .finally(() => setCarregando(false));
   }, []);
+
+  // primeira busca: o estado inicial já é "carregando"
+  useEffect(() => {
+    buscarCasas();
+  }, [buscarCasas]);
+
+  function tentarDeNovo() {
+    setCarregando(true);
+    setErro(null);
+    buscarCasas();
+  }
 
   return (
     <Pagina>
@@ -35,15 +56,28 @@ function App() {
 
       <Secao>
         <h1>Casas de Hogwarts</h1>
-        {casas.map((casa) => (
+
+        {carregando && <Aviso>Carregando casas...</Aviso>}
+
+        {erro && (
+          <>
+            <Aviso role="alert">{erro}</Aviso>
+            <button onClick={tentarDeNovo}>Tentar de novo</button>
+          </>
+        )}
+
+        {!carregando && !erro && casas.map((casa) => (
           <Casa key={casa.id} data={casa} />
         ))}
       </Secao>
 
-      <Secao>
-        <h1>Quiz</h1>
-        <Quiz casas={casas} />
-      </Secao>
+      {/* o quiz só aparece depois que as casas carregarem */}
+      {!carregando && !erro && (
+        <Secao>
+          <h1>Quiz</h1>
+          <Quiz casas={casas} />
+        </Secao>
+      )}
     </Pagina>
   );
 }
