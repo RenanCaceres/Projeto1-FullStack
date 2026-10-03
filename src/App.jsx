@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { getCasas } from './services/hogwartsService';
 import Casa from './components/Casa';
 import Quiz from './components/Quiz';
@@ -19,11 +19,18 @@ const Secao = styled.section`
   border-radius: ${({ theme }) => theme.raio};
 `;
 
+const Grade = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 20px;
+`;
+
 const Aviso = styled.p`
   color: ${({ theme }) => theme.cores.textoSuave};
 `;
 
 function App() {
+  const tema = useTheme();
   const [casas, setCasas] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
@@ -66,9 +73,17 @@ function App() {
           </>
         )}
 
-        {!carregando && !erro && casas.map((casa) => (
-          <Casa key={casa.id} data={casa} />
-        ))}
+        {!carregando && !erro && (
+          <Grade>
+            {casas.map((casa) => (
+              <Casa
+                key={casa.id}
+                data={casa}
+                cor={tema.casas[casa.name] ?? tema.cores.destaque}
+              />
+            ))}
+          </Grade>
+        )}
       </Secao>
 
       {/* o quiz só aparece depois que as casas carregarem */}
