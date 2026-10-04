@@ -3,23 +3,13 @@ import styled, { useTheme } from 'styled-components';
 import { getCasas } from './services/hogwartsService';
 import Casa from './components/Casa';
 import Quiz from './components/Quiz';
-import banner from './assets/casasHeader.webp';
+import Cabecalho from './components/Cabecalho';
 
 const Pagina = styled.div`
   max-width: 1100px;
   margin: 0 auto;
   padding: 32px 16px;
   text-align: center;
-`;
-
-// height: auto + width/height no <img> reservam o espaço e evitam que a página "pule"
-const Banner = styled.img`
-  display: block;
-  width: 100%;
-  height: auto;
-  margin-bottom: 32px;
-  border-radius: ${({ theme }) => theme.raio};
-  border: 1px solid ${({ theme }) => theme.cores.borda};
 `;
 
 const Secao = styled.section`
@@ -69,17 +59,10 @@ function App() {
 
   return (
     <Pagina>
-      <header>
-        <Banner
-          src={banner}
-          width={1600}
-          height={476}
-          alt="Brasões de Gryffindor, Hufflepuff, Ravenclaw e Slytherin"
-        />
-      </header>
+      <Cabecalho />
 
       <Secao>
-        <h1>Casas de Hogwarts</h1>
+        <h2>As Casas</h2>
 
         {carregando && <Aviso>Carregando casas...</Aviso>}
 
@@ -106,7 +89,7 @@ function App() {
       {/* o quiz só aparece depois que as casas carregarem */}
       {!carregando && !erro && (
         <Secao>
-          <h1>Quiz</h1>
+          <h2>Quiz</h2>
           <Quiz casas={casas} />
         </Secao>
       )}

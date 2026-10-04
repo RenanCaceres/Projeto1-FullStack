@@ -1,4 +1,21 @@
 import { createGlobalStyle } from 'styled-components';
+import { cintilar } from './animacoes';
+
+// estrelas feitas com pontinhos de radial-gradient que se repetem pela tela
+const estrelasPequenas = `
+  radial-gradient(1px 1px at 20px 30px, #fff, transparent),
+  radial-gradient(1px 1px at 120px 80px, #fff, transparent),
+  radial-gradient(1px 1px at 60px 150px, #fff, transparent),
+  radial-gradient(1px 1px at 190px 20px, #fff, transparent),
+  radial-gradient(1px 1px at 160px 170px, #fff, transparent)
+`;
+
+const estrelasGrandes = `
+  radial-gradient(1.5px 1.5px at 50px 90px, #fff, transparent),
+  radial-gradient(2px 2px at 240px 40px, #f5e6b8, transparent),
+  radial-gradient(1.5px 1.5px at 300px 260px, #fff, transparent),
+  radial-gradient(2px 2px at 130px 320px, #f5e6b8, transparent)
+`;
 
 const Global = createGlobalStyle`
   *,
@@ -10,11 +27,39 @@ const Global = createGlobalStyle`
   body {
     margin: 0;
     min-height: 100vh;
-    background: ${({ theme }) => theme.cores.fundo};
+    /* céu noturno: mais claro no topo e escurecendo para baixo */
+    background:
+      radial-gradient(ellipse at top, #241f3d 0%, transparent 60%),
+      ${({ theme }) => theme.cores.fundo};
+    background-attachment: fixed;
     color: ${({ theme }) => theme.cores.texto};
     font-family: ${({ theme }) => theme.fontes.texto};
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* duas camadas de estrelas fixas atrás de todo o conteúdo */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Animação feita com auxílio de IA (Claude) */
+  /* as camadas piscam em ritmos diferentes, então as estrelas não piscam todas juntas */
+  body::before {
+    background-image: ${estrelasPequenas};
+    background-size: 210px 210px;
+    animation: ${cintilar} 5s ease-in-out infinite;
+  }
+
+  body::after {
+    background-image: ${estrelasGrandes};
+    background-size: 350px 350px;
+    animation: ${cintilar} 7s ease-in-out 2s infinite;
   }
 
   h1,
