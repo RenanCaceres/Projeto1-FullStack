@@ -2,6 +2,7 @@ import { useMemo, useReducer } from 'react';
 import styled from 'styled-components';
 import { perguntas } from '../data/perguntas';
 import { embaralhar } from '../utils/embaralhar';
+import Resultado from './Resultado';
 
 const Contador = styled.p`
   margin: 0 0 8px;
@@ -79,14 +80,15 @@ function Quiz({ casas }) {
 
   // acabaram as perguntas: mostra o resultado
   if (indice >= total) {
-    const casa = casas.find(c => c.name === vencedora);
-
     return (
-      <div>
-        <h2>Você é da {vencedora}!</h2>
-        {casa && <p>Fundador: {casa.founder} - Animal: {casa.animal}</p>}
-        <button onClick={reiniciar}>Refazer</button>
-      </div>
+      <Resultado
+        vencedora={vencedora}
+        casa={casas.find(c => c.name === vencedora)}
+        pontos={pontos}
+        ordem={desempate}
+        total={total}
+        onRefazer={reiniciar}
+      />
     );
   }
 
