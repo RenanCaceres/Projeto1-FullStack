@@ -6,21 +6,23 @@ Divisão das tarefas restantes do Projeto 1 (Casas de Hogwarts) entre os integra
 
 | Integrante | Tarefas | Proporção |
 |---|---|---|
-| Pedro Lucas (peluca2007) | 1 a 8 + extras 11 a 16 | 80% (+ extras) |
+| Pedro Lucas (peluca2007) | 1 a 8 + extras 11 a 22 | 80% (+ extras) |
 | Renan Cáceres (RenanCaceres) | 9 e 10 | 20% |
 
 **Por que essa divisão?** O Renan já fez a base do projeto antes deste plano: configuração do Vite, consumo da Wizard World API, a listagem das casas e a primeira versão do quiz. Por isso, das tarefas que faltam, a maior parte fica com o Pedro e o Renan fica com tarefas menores e independentes.
 
 As **tarefas extras (11 a 16)** surgiram depois que as tarefas 1 a 8 ficaram prontas: o site funcionava, mas o visual ainda estava "cru". Elas são só do Pedro e não mexem nos arquivos das tarefas 9 e 10.
 
+As **tarefas 17 a 22** vieram depois de estudar a Wizard World API inteira: o site só usava metade dos dados de `/Houses` e ignorava os feitiços e as poções.
+
 ## Requisitos do enunciado
 
 | Requisito | Onde é atendido |
 |---|---|
-| API JSON aberta | Wizard World API (`src/services/hogwartsService.js`) |
-| Hook / funcionalidade do React | `useReducer` (tarefa 1), `useMemo` e `memo` (tarefa 2) |
+| API JSON aberta | Wizard World API (`src/services/hogwartsService.js`): casas, feitiços e poções |
+| Hook / funcionalidade do React | `useReducer` (tarefa 1), `useMemo` e `memo` (tarefa 2), hooks próprios `useApi` e `useDebounce` (tarefas 18 e 19) |
 | Biblioteca externa | `styled-components` (tarefa 3) |
-| Documentar uso de ferramentas de apoio (IA) | README (tarefa 10) e comentários nas animações (tarefas 11 a 16) |
+| Documentar uso de ferramentas de apoio (IA) | README (tarefa 10) e comentários nas animações (tarefas 11 a 22) |
 | Cada integrante com parte bem definida | Este plano |
 
 ---
@@ -197,6 +199,73 @@ Com as tarefas 1 a 8 prontas, o site funciona, mas o visual ainda está simples.
   - Fazer as seções aparecerem conforme a página é rolada.
   - Revisar a página no celular (largura de 360 px) e corrigir o que estiver quebrado.
 - **Commit:** `style: adiciona navegação, rodapé e acabamento final`
+
+---
+
+## Tarefas extras do Pedro: aproveitando a API
+
+### O que a Wizard World API oferece
+
+| Endpoint | Itens | Uso no projeto |
+|---|---|---|
+| `/Houses` | 4 | Já usado. Faltava mostrar `traits` (qualidades) e `heads` (diretores). |
+| `/Spells` | 306 | Nome, encantamento, efeito, tipo e cor da luz de cada feitiço. Vira o **Grimório**. |
+| `/Elixirs` | 145 | Efeito, efeitos colaterais, dificuldade, ingredientes e inventores. Vira o **Livro de poções**. |
+| `/Ingredients` | 187 | Só tem nomes; já aparecem dentro das poções. Não usado sozinho. |
+| `/Wizards` | 17 | Dados incompletos (a maioria sem primeiro nome). Não usado. |
+| `/MagicalCreature` | 0 | A API devolve vazio. Não usado. |
+| `POST /Feedback` | — | Gravaria dados na API pública. Não usado. |
+
+O filtro `?Name=` da API não é confiável (`/Spells?Name=lumos` volta vazio), então as buscas são feitas no próprio site: a lista é baixada uma vez e filtrada na tela.
+
+As regras das tarefas extras continuam valendo: sem bibliotecas novas, animações respeitando `prefers-reduced-motion` e com o comentário de IA.
+
+### ✅ Tarefa 17: Casas completas
+- **Arquivos:** `src/utils/traducoes.js` (novo), `src/components/Casa.jsx`
+- **O que fazer:**
+  - Criar `traducoes.js` com a tradução das qualidades das casas, dos tipos de feitiço e das dificuldades das poções.
+  - Mostrar nos cards os diretores da casa (`heads`) e as qualidades (`traits`) como etiquetas em português.
+- **Commit:** `feat: mostra diretores e qualidades das casas`
+
+### ✅ Tarefa 18: Serviço completo da API
+- **Arquivos:** `src/services/hogwartsService.js`, `src/hooks/useApi.js` (novo)
+- **O que fazer:**
+  - Adicionar `getFeiticos` e `getPocoes` ao serviço.
+  - Guardar as respostas em cache, para não buscar a mesma lista duas vezes.
+  - Criar o hook `useApi`, que cuida de carregamento, erro e "tentar de novo" para qualquer busca.
+- **Commit:** `feat: amplia serviço da API com feitiços, poções e cache`
+
+### ✅ Tarefa 19: Grimório de feitiços
+- **Arquivos:** `src/components/Feiticos.jsx` (novo), `src/components/Controles.js` (novo), `src/hooks/useDebounce.js` (novo)
+- **O que fazer:**
+  - Listar os 306 feitiços com busca por nome, encantamento ou efeito e filtro por tipo.
+  - Criar o hook `useDebounce` para a busca só filtrar quando a pessoa para de digitar.
+  - Mostrar 12 de cada vez, com botão "Carregar mais".
+  - Fazer cada card brilhar na cor da luz do feitiço.
+  - Criar em `Controles.js` os campos de busca e filtro, para reaproveitar nas poções.
+- **Commit:** `feat: adiciona grimório de feitiços com busca e filtro`
+
+### ✅ Tarefa 20: Livro de poções
+- **Arquivos:** `src/components/Pocoes.jsx` (novo)
+- **O que fazer:**
+  - Listar as 145 poções com busca e filtro por dificuldade, com um selo colorido para cada nível.
+  - Ao clicar em "Ver detalhes", abrir o card com animação, mostrando ingredientes, inventores, efeitos colaterais e tempo de preparo.
+- **Commit:** `feat: adiciona livro de poções com filtro por dificuldade`
+
+### ✅ Tarefa 21: Resultado mais completo
+- **Arquivos:** `src/components/Resultado.jsx`
+- **O que fazer:**
+  - Mostrar as qualidades e os diretores da casa vencedora.
+  - Sortear um feitiço da API para a pessoa ("Seu feitiço").
+- **Commit:** `feat: mostra qualidades e feitiço sorteado no resultado`
+
+### ✅ Tarefa 22: Novas seções na página
+- **Arquivos:** `src/App.jsx`
+- **O que fazer:**
+  - Adicionar as seções "Feitiços" e "Poções" na página e na barra de navegação.
+  - Trocar a lógica de carregamento das casas pelo hook `useApi`, igual às outras seções.
+  - Revisar tudo no celular.
+- **Commit:** `feat: adiciona seções de feitiços e poções à página`
 
 ---
 
