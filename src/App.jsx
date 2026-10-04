@@ -1,11 +1,44 @@
 import { useCallback, useEffect, useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { getCasas } from './services/hogwartsService';
-import Casa from './components/Casa';
+import { aparecerSubindo } from './styles/animacoes';
+import Casa, { CasaEsqueleto } from './components/Casa';
 import Quiz from './components/Quiz';
 import Cabecalho from './components/Cabecalho';
+import Rodape from './components/Rodape';
 
-const Pagina = styled.div`
+// barra fixa no topo com atalhos para as seções
+const Navegacao = styled.nav`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(15, 14, 23, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid ${({ theme }) => theme.cores.borda};
+
+  a {
+    padding: 6px 14px;
+    font-family: ${({ theme }) => theme.fontes.titulo};
+    font-weight: 700;
+    color: ${({ theme }) => theme.cores.texto};
+    text-decoration: none;
+    border-radius: ${({ theme }) => theme.raio};
+    transition:
+      color ${({ theme }) => theme.animacao.rapida},
+      background ${({ theme }) => theme.animacao.rapida};
+
+    &:hover {
+      color: ${({ theme }) => theme.cores.destaque};
+      background: ${({ theme }) => theme.cores.superficie};
+    }
+  }
+`;
+
+const Pagina = styled.main`
   max-width: 1100px;
   margin: 0 auto;
   padding: 32px 16px;
@@ -18,12 +51,32 @@ const Secao = styled.section`
   background: ${({ theme }) => theme.cores.superficie};
   border: 1px solid ${({ theme }) => theme.cores.borda};
   border-radius: ${({ theme }) => theme.raio};
+
+  @media (max-width: 480px) {
+    padding: 16px;
+  }
+
+  /* Animação feita com auxílio de IA (Claude) */
+  /* a seção aparece conforme a página é rolada (só CSS, sem JavaScript) */
+  /* navegadores sem suporte a animation-timeline mostram a seção normalmente */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: ${aparecerSubindo} linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
 `;
 
+// 2 colunas no computador (as 4 casas ficam em 2×2), 1 no celular
 const Grade = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const Aviso = styled.p`
@@ -58,42 +111,59 @@ function App() {
   }
 
   return (
-    <Pagina>
-      <Cabecalho />
+    <>
+      <Navegacao aria-label="Seções da página">
+        <a href="#casas">Casas</a>
+        <a href="#quiz">Quiz</a>
+      </Navegacao>
 
-      <Secao>
-        <h2>As Casas</h2>
+      <Pagina id="topo">
+        <Cabecalho />
 
-        {carregando && <Aviso>Carregando casas...</Aviso>}
+        <Secao id="casas">
+          <h2>As Casas</h2>
 
-        {erro && (
-          <>
-            <Aviso role="alert">{erro}</Aviso>
-            <button onClick={tentarDeNovo}>Tentar de novo</button>
-          </>
-        )}
+          {/* enquanto a API responde, mostra 4 cards "vazios" pulsando */}
+          {carregando && (
+            <Grade role="status" aria-label="Carregando casas">
+              {[0, 1, 2, 3].map((n) => (
+                <CasaEsqueleto key={n} />
+              ))}
+            </Grade>
+          )}
 
-        {!carregando && !erro && (
-          <Grade>
-            {casas.map((casa) => (
-              <Casa
-                key={casa.id}
-                data={casa}
-                cor={tema.casas[casa.name] ?? tema.cores.destaque}
-              />
-            ))}
-          </Grade>
-        )}
-      </Secao>
+          {erro && (
+            <>
+              <Aviso role="alert">{erro}</Aviso>
+              <button onClick={tentarDeNovo}>Tentar de novo</button>
+            </>
+          )}
 
-      {/* o quiz só aparece depois que as casas carregarem */}
-      {!carregando && !erro && (
-        <Secao>
-          <h2>Quiz</h2>
-          <Quiz casas={casas} />
+          {!carregando && !erro && (
+            <Grade>
+              {casas.map((casa, i) => (
+                <Casa
+                  key={casa.id}
+                  data={casa}
+                  cor={tema.casas[casa.name] ?? tema.cores.destaque}
+                  indice={i}
+                />
+              ))}
+            </Grade>
+          )}
         </Secao>
-      )}
-    </Pagina>
+
+        {/* o quiz só aparece depois que as casas carregarem */}
+        {!carregando && !erro && (
+          <Secao id="quiz">
+            <h2>Quiz</h2>
+            <Quiz casas={casas} />
+          </Secao>
+        )}
+      </Pagina>
+
+      <Rodape />
+    </>
   );
 }
 

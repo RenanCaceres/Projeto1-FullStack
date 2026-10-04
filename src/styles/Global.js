@@ -24,6 +24,14 @@ const Global = createGlobalStyle`
     box-sizing: border-box;
   }
 
+  /* Animação feita com auxílio de IA (Claude) */
+  /* rolagem suave ao clicar nos links da navegação */
+  /* scroll-padding-top desconta a altura da barra fixa, para ela não cobrir o título */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 64px;
+  }
+
   body {
     margin: 0;
     min-height: 100vh;
