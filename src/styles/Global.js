@@ -43,11 +43,32 @@ const Global = createGlobalStyle`
     border-radius: ${({ theme }) => theme.raio};
     background: transparent;
     color: ${({ theme }) => theme.cores.texto};
-    transition: background 0.2s, color 0.2s;
+    transition:
+      background ${({ theme }) => theme.animacao.rapida},
+      color ${({ theme }) => theme.animacao.rapida};
 
     &:hover {
       background: ${({ theme }) => theme.cores.destaque};
       color: ${({ theme }) => theme.cores.fundo};
+    }
+  }
+
+  /* contorno dourado só para quem navega pelo teclado */
+  :focus-visible {
+    outline: 2px solid ${({ theme }) => theme.cores.destaque};
+    outline-offset: 3px;
+  }
+
+  /* Animação feita com auxílio de IA (Claude) */
+  /* quem pediu menos movimento no sistema não vê as animações */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 `;
