@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 import { getCasas } from './services/hogwartsService';
+import { useApi } from './hooks/useApi';
 import { aparecerSubindo } from './styles/animacoes';
 import Casa, { CasaEsqueleto } from './components/Casa';
 import Quiz from './components/Quiz';
 import Cabecalho from './components/Cabecalho';
 import Rodape from './components/Rodape';
+import Feiticos from './components/Feiticos';
+import Pocoes from './components/Pocoes';
 
 // barra fixa no topo com atalhos para as seções
 const Navegacao = styled.nav`
@@ -13,6 +15,7 @@ const Navegacao = styled.nav`
   top: 0;
   z-index: 10;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   padding: 10px 16px;
@@ -34,6 +37,17 @@ const Navegacao = styled.nav`
     &:hover {
       color: ${({ theme }) => theme.cores.destaque};
       background: ${({ theme }) => theme.cores.superficie};
+    }
+  }
+
+  /* no celular os 4 links precisam caber numa linha só */
+  @media (max-width: 480px) {
+    gap: 0;
+    padding: 8px 4px;
+
+    a {
+      padding: 6px 8px;
+      font-size: 0.9rem;
     }
   }
 `;
@@ -79,42 +93,29 @@ const Grade = styled.div`
   }
 `;
 
+const Descricao = styled.p`
+  max-width: 600px;
+  margin: -8px auto 24px;
+  color: ${({ theme }) => theme.cores.textoSuave};
+`;
+
 const Aviso = styled.p`
   color: ${({ theme }) => theme.cores.textoSuave};
 `;
 
 function App() {
   const tema = useTheme();
-  const [casas, setCasas] = useState([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState(null);
-
-  const buscarCasas = useCallback(() => {
-    getCasas()
-      .then((data) => setCasas(data))
-      .catch((err) => {
-        console.error(err);
-        setErro('Não foi possível carregar as casas. Verifique sua conexão.');
-      })
-      .finally(() => setCarregando(false));
-  }, []);
-
-  // primeira busca: o estado inicial já é "carregando"
-  useEffect(() => {
-    buscarCasas();
-  }, [buscarCasas]);
-
-  function tentarDeNovo() {
-    setCarregando(true);
-    setErro(null);
-    buscarCasas();
-  }
+  // carregamento, erro e "tentar de novo" ficam no hook useApi
+  const { dados, carregando, erro, tentarDeNovo } = useApi(getCasas);
+  const casas = dados ?? [];
 
   return (
     <>
       <Navegacao aria-label="Seções da página">
         <a href="#casas">Casas</a>
         <a href="#quiz">Quiz</a>
+        <a href="#feiticos">Feitiços</a>
+        <a href="#pocoes">Poções</a>
       </Navegacao>
 
       <Pagina id="topo">
@@ -160,6 +161,23 @@ function App() {
             <Quiz casas={casas} />
           </Secao>
         )}
+
+        {/* feitiços e poções buscam os próprios dados, independentes das casas */}
+        <Secao id="feiticos">
+          <h2>Grimório de Feitiços</h2>
+          <Descricao>
+            Todos os feitiços da Wizard World API. Cada card brilha na cor da luz do feitiço.
+          </Descricao>
+          <Feiticos />
+        </Secao>
+
+        <Secao id="pocoes">
+          <h2>Livro de Poções</h2>
+          <Descricao>
+            Poções e elixires com ingredientes, inventores e efeitos colaterais.
+          </Descricao>
+          <Pocoes />
+        </Secao>
       </Pagina>
 
       <Rodape />
