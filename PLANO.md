@@ -6,7 +6,7 @@ Divisão das tarefas restantes do Projeto 1 (Casas de Hogwarts) entre os integra
 
 | Integrante | Tarefas | Proporção |
 |---|---|---|
-| Pedro Lucas (peluca2007) | 1 a 8 + extras 11 a 22 | 80% (+ extras) |
+| Pedro Lucas (peluca2007) | 1 a 8 + extras 11 a 23 | 80% (+ extras) |
 | Renan Cáceres (RenanCaceres) | 9 e 10 | 20% |
 
 **Por que essa divisão?** O Renan já fez a base do projeto antes deste plano: configuração do Vite, consumo da Wizard World API, a listagem das casas e a primeira versão do quiz. Por isso, das tarefas que faltam, a maior parte fica com o Pedro e o Renan fica com tarefas menores e independentes.
@@ -20,9 +20,9 @@ As **tarefas 17 a 22** vieram depois de estudar a Wizard World API inteira: o si
 | Requisito | Onde é atendido |
 |---|---|
 | API JSON aberta | Wizard World API (`src/services/hogwartsService.js`): casas, feitiços e poções |
-| Hook / funcionalidade do React | `useReducer` (tarefa 1), `useMemo` e `memo` (tarefa 2), hooks próprios `useApi` e `useDebounce` (tarefas 18 e 19) |
+| Hook / funcionalidade do React | `useReducer` (tarefa 1), `useMemo` e `memo` (tarefa 2), hooks próprios `useApi`, `useDebounce` e `useRota` (tarefas 18, 19 e 23) |
 | Biblioteca externa | `styled-components` (tarefa 3) |
-| Documentar uso de ferramentas de apoio (IA) | README (tarefa 10) e comentários nas animações (tarefas 11 a 22) |
+| Documentar uso de ferramentas de apoio (IA) | README (tarefa 10) e comentários nas animações (tarefas 11 a 23) |
 | Cada integrante com parte bem definida | Este plano |
 
 ---
@@ -266,6 +266,22 @@ As regras das tarefas extras continuam valendo: sem bibliotecas novas, animaçõ
   - Trocar a lógica de carregamento das casas pelo hook `useApi`, igual às outras seções.
   - Revisar tudo no celular.
 - **Commit:** `feat: adiciona seções de feitiços e poções à página`
+
+## Tarefa extra do Pedro: organização em páginas
+
+Com casas, quiz, feitiços e poções, a página única ficou longa demais: tudo empilhado num lugar só. A tarefa 23 separa o site em páginas.
+
+### ✅ Tarefa 23: Site separado em páginas
+- **Arquivos:** `src/hooks/useRota.js` (novo), `src/paginas/` (nova pasta: `lista.js`, `Inicio.jsx`, `PaginaCasas.jsx`, `PaginaQuiz.jsx`, `PaginaFeiticos.jsx`, `PaginaPocoes.jsx`), `src/components/Navegacao.jsx` (novo), `src/components/Layout.js` (novo), `src/App.jsx`, `src/components/Rodape.jsx`
+- **O que fazer:**
+  - Criar o hook `useRota`, que lê a página atual pelo `#` do endereço (`#/casas`, `#/quiz`, `#/feiticos`, `#/pocoes`). Cada página ganha link próprio e o botão voltar do navegador funciona, sem biblioteca de rotas.
+  - Página inicial com o banner e quatro "portais" que levam para cada área.
+  - Cada área numa página própria, com título, descrição e o próprio carregamento.
+  - Barra de navegação com a marca do site e um sublinhado dourado animado na página atual.
+  - Título da aba do navegador acompanhando a página (ex.: "Quiz · Casas de Hogwarts").
+  - Buscar as casas assim que o site abre, para o quiz e a página de casas abrirem mais rápido.
+  - Animação de entrada a cada troca de página.
+- **Commit:** `feat: separa o site em páginas com navegação por endereço`
 
 ---
 
