@@ -202,8 +202,6 @@ npm run build
   <img src="docs/preview.png" alt="Preview da aplicação" width="90%">
 </p>
 
-> 📸 Captura de tela da aplicação em funcionamento.
-
 ---
 
 ## 🧙‍♂️ Resultado
