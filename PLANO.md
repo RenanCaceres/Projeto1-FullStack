@@ -147,7 +147,7 @@ Com as tarefas 1 a 8 prontas, o site funciona, mas o visual ainda está simples.
   Assim fica fácil para o Renan listar essas partes na seção **Ferramentas de apoio** do README (tarefa 10).
 - Continua valendo uma branch por tarefa, na ordem abaixo, porque várias mexem nos mesmos arquivos.
 
-### Tarefa 11: Base das animações
+### ✅ Tarefa 11: Base das animações
 - **Arquivos:** `src/styles/animacoes.js` (novo), `src/styles/tema.js`, `src/styles/Global.js`
 - **O que fazer:**
   - Criar `animacoes.js` com os `keyframes` reutilizáveis: aparecer subindo, brilho pulsante, cintilar e flutuar.
@@ -156,7 +156,7 @@ Com as tarefas 1 a 8 prontas, o site funciona, mas o visual ainda está simples.
   - Melhorar o foco do teclado (`:focus-visible`) com um contorno dourado.
 - **Commit:** `style: cria base de animações e foco visível`
 
-### Tarefa 12: Fundo estrelado e cabeçalho
+### ✅ Tarefa 12: Fundo estrelado e cabeçalho
 - **Arquivos:** `src/styles/Global.js`, `src/components/Cabecalho.jsx` (novo), `src/App.jsx`
 - **O que fazer:**
   - Trocar o fundo liso por um degradê noturno com estrelas que cintilam, feitas só com CSS.
@@ -164,7 +164,7 @@ Com as tarefas 1 a 8 prontas, o site funciona, mas o visual ainda está simples.
   - Fazer o cabeçalho aparecer com uma animação suave ao abrir a página.
 - **Commit:** `style: adiciona fundo estrelado e cabeçalho animado`
 
-### Tarefa 13: Cards das casas animados
+### ✅ Tarefa 13: Cards das casas animados
 - **Arquivos:** `src/components/Casa.jsx`, `src/App.jsx`
 - **O que fazer:**
   - Fazer os cards entrarem um depois do outro (efeito cascata com `animation-delay`).
@@ -172,7 +172,7 @@ Com as tarefas 1 a 8 prontas, o site funciona, mas o visual ainda está simples.
   - Trocar o texto "Carregando casas..." por cards-esqueleto (*skeleton*) pulsando enquanto a API responde.
 - **Commit:** `style: anima cards das casas e adiciona skeleton de carregamento`
 
-### Tarefa 14: Quiz com transições
+### ✅ Tarefa 14: Quiz com transições
 - **Arquivos:** `src/components/Quiz.jsx`
 - **O que fazer:**
   - Mostrar as opções como botões grandes em grade (2×2 no computador, uma coluna no celular).
@@ -180,7 +180,7 @@ Com as tarefas 1 a 8 prontas, o site funciona, mas o visual ainda está simples.
   - Dar um brilho que corre pela barra de progresso.
 - **Commit:** `style: adiciona transições e novo visual ao quiz`
 
-### Tarefa 15: Revelação do resultado
+### ✅ Tarefa 15: Revelação do resultado
 - **Arquivos:** `src/components/Resultado.jsx`
 - **O que fazer:**
   - Antes de mostrar a casa, exibir por cerca de 2 segundos "O Chapéu Seletor está pensando..." com pontinhos animados, para criar suspense.
@@ -189,7 +189,7 @@ Com as tarefas 1 a 8 prontas, o site funciona, mas o visual ainda está simples.
   - Soltar faíscas em CSS nas cores da casa vencedora.
 - **Commit:** `feat: anima a revelação do resultado do quiz`
 
-### Tarefa 16: Navegação, rodapé e acabamento
+### ✅ Tarefa 16: Navegação, rodapé e acabamento
 - **Arquivos:** `src/App.jsx`, `src/components/Rodape.jsx` (novo), `src/styles/Global.js`
 - **O que fazer:**
   - Adicionar uma barra de navegação fixa no topo com links para "Casas" e "Quiz", com rolagem suave.
