@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import styled, { keyframes, useTheme } from 'styled-components';
 import { aparecerSubindo, brilhoPulsante, flutuar } from '../styles/animacoes';
+import { getFeiticos } from '../services/hogwartsService';
+import { useApi } from '../hooks/useApi';
+import { nomesDePessoas, qualidades, traduzir } from '../utils/traducoes';
+import { Etiqueta, Etiquetas } from './Casa';
 
 // tempo de suspense antes de revelar a casa (em ms)
 const TEMPO_SUSPENSE = 2000;
@@ -134,6 +138,48 @@ const Faisca = styled.span`
   animation-delay: ${({ $atraso }) => 0.3 + $atraso}s;
 `;
 
+const QualidadesVencedora = styled(Etiquetas)`
+  justify-content: center;
+`;
+
+// Animação feita com auxílio de IA (Claude)
+// brilho dourado nas letras do encantamento sorteado
+const brilhoEncantamento = keyframes`
+  0%,
+  100% {
+    text-shadow: 0 0 6px rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 18px rgba(212, 175, 55, 0.9);
+  }
+`;
+
+const SeuFeitico = styled.div`
+  max-width: 520px;
+  margin: 0 auto 32px;
+  padding: 16px 20px;
+  border: 1px dashed ${({ theme }) => theme.cores.destaque};
+  border-radius: ${({ theme }) => theme.raio};
+
+  /* Animação feita com auxílio de IA (Claude) */
+  animation: ${aparecerSubindo} ${({ theme }) => theme.animacao.normal}
+    ${({ theme }) => theme.animacao.curva} 0.4s both;
+
+  p {
+    margin: 4px 0;
+  }
+`;
+
+const Encantamento = styled.p`
+  font-family: ${({ theme }) => theme.fontes.titulo};
+  font-size: 1.5rem;
+  font-style: italic;
+  color: ${({ theme }) => theme.cores.destaque};
+
+  /* Animação feita com auxílio de IA (Claude) */
+  animation: ${brilhoEncantamento} 2.5s ease-in-out infinite;
+`;
+
 const Subtitulo = styled.p`
   margin: 0 0 4px;
   color: ${({ theme }) => theme.cores.textoSuave};
@@ -199,6 +245,17 @@ function Resultado({ vencedora, casa, pontos, ordem, total, onRefazer }) {
   const tema = useTheme();
   const cor = tema.casas[vencedora] ?? tema.cores.destaque;
   const [pensando, setPensando] = useState(true);
+  const { dados: feiticos } = useApi(getFeiticos);
+  // número sorteado uma vez só, quando a tela de resultado abre
+  const [sorteio] = useState(() => Math.random());
+
+  // escolhe um feitiço com encantamento (as palavras mágicas) quando a lista chega
+  // se a API falhar, o resultado aparece normalmente, só sem o feitiço
+  const feitico = useMemo(() => {
+    const comEncantamento = (feiticos ?? []).filter(f => f.incantation);
+    if (comEncantamento.length === 0) return null;
+    return comEncantamento[Math.floor(sorteio * comEncantamento.length)];
+  }, [feiticos, sorteio]);
 
   // suspense: o Chapéu "pensa" antes de mostrar a casa
   useEffect(() => {
@@ -249,9 +306,27 @@ function Resultado({ vencedora, casa, pontos, ordem, total, onRefazer }) {
           <>
             <p>Fundador: {casa.founder}</p>
             <p>Animal: {casa.animal}</p>
+            <p>Diretores: {nomesDePessoas(casa.heads)}</p>
+            <QualidadesVencedora aria-label="Qualidades da sua casa">
+              {casa.traits.map(t => (
+                <Etiqueta key={t.id} $cor={cor}>
+                  {traduzir(qualidades, t.name)}
+                </Etiqueta>
+              ))}
+            </QualidadesVencedora>
           </>
         )}
       </Destaque>
+
+      {feitico && (
+        <SeuFeitico>
+          <Subtitulo>Seu feitiço sorteado</Subtitulo>
+          <Encantamento>“{feitico.incantation}”</Encantamento>
+          <p>
+            <strong>{feitico.name}</strong>: {feitico.effect}
+          </p>
+        </SeuFeitico>
+      )}
 
       <h3>Placar</h3>
       <Placar>

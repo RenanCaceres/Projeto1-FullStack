@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { aparecerSubindo } from '../styles/animacoes';
+import { qualidades, traduzir, nomesDePessoas } from '../utils/traducoes';
 
 const Card = styled.article`
   position: relative;
@@ -81,6 +82,24 @@ const Infos = styled.dl`
   }
 `;
 
+// lista de etiquetas (qualidades da casa); também usada na tela de resultado
+export const Etiquetas = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+`;
+
+export const Etiqueta = styled.li`
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  border: 1px solid ${({ $cor }) => $cor};
+  border-radius: 999px;
+  background: ${({ $cor }) => $cor}26;
+`;
+
 // memo: só re-renderiza se os dados da casa mudarem
 // indice: posição do card na grade, usada no atraso da animação de entrada
 function Casa({ data, cor, indice = 0 }) {
@@ -100,7 +119,17 @@ function Casa({ data, cor, indice = 0 }) {
         <dd>{data.ghost}</dd>
         <dt>Salão comunal</dt>
         <dd>{data.commonRoom}</dd>
+        <dt>Diretores</dt>
+        <dd>{nomesDePessoas(data.heads)}</dd>
       </Infos>
+
+      <Etiquetas aria-label="Qualidades da casa">
+        {data.traits.map(t => (
+          <Etiqueta key={t.id} $cor={cor}>
+            {traduzir(qualidades, t.name)}
+          </Etiqueta>
+        ))}
+      </Etiquetas>
     </Card>
   );
 }
@@ -151,6 +180,7 @@ export function CasaEsqueleto() {
       <LinhaEsqueleto $largura={80} />
       <LinhaEsqueleto $largura={85} />
       <LinhaEsqueleto $largura={70} />
+      <LinhaEsqueleto $largura={75} />
     </CardEsqueleto>
   );
 }
