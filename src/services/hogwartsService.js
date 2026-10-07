@@ -5,34 +5,27 @@ const api = axios.create({
     timeout: 10000, // 10s: evita ficar carregando para sempre
 });
 
-// cache das respostas: cada rota é buscada uma vez só por visita
-// (ex.: os feitiços são usados no grimório e no resultado do quiz)
+// guarda o que já foi baixado (os feitiços são usados no grimório e no quiz)
 const cache = new Map();
 
-function buscar(rota) {
-    if (!cache.has(rota)) {
-        const pedido = api.get(rota)
-            .then((response) => response.data)
-            .catch((erro) => {
-                cache.delete(rota); // se falhar, a próxima tentativa busca de novo
-                throw erro;
-            });
-        cache.set(rota, pedido);
+async function buscar(rota) {
+    if (cache.has(rota)) {
+        return cache.get(rota);
     }
-    return cache.get(rota);
+
+    const resposta = await api.get(rota);
+    cache.set(rota, resposta.data); // só o .data: o axios devolve também status, headers etc.
+    return resposta.data;
 }
 
-// 4 casas: nome, cores, fundador, animal, elemento, fantasma, salão comunal, diretores e qualidades
 export function getCasas() {
     return buscar("/Houses");
 }
 
-// 306 feitiços: nome, encantamento, efeito, tipo e cor da luz
 export function getFeiticos() {
     return buscar("/Spells");
 }
 
-// 145 poções: efeito, efeitos colaterais, dificuldade, ingredientes e inventores
 export function getPocoes() {
     return buscar("/Elixirs");
 }

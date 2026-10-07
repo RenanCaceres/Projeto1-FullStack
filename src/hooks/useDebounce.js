@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 
-// Hook próprio: devolve o valor só depois que ele parar de mudar por "espera" ms.
-// Na busca, evita filtrar a lista inteira a cada tecla digitada.
+// só devolve o valor novo depois que a pessoa para de digitar por "espera" ms
 export function useDebounce(valor, espera = 300) {
   const [valorAtrasado, setValorAtrasado] = useState(valor);
 
   useEffect(() => {
     const timer = setTimeout(() => setValorAtrasado(valor), espera);
-    return () => clearTimeout(timer); // digitou de novo: cancela e recomeça a contagem
+    return () => clearTimeout(timer); // digitou de novo antes do tempo: cancela o anterior
   }, [valor, espera]);
 
   return valorAtrasado;

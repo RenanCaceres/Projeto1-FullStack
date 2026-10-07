@@ -5,9 +5,7 @@ function PaginaPocoes() {
   return (
     <Secao>
       <h2>Livro de Poções</h2>
-      <Descricao>
-        Poções e elixires com ingredientes, inventores e efeitos colaterais.
-      </Descricao>
+      <Descricao>Poções e elixires com ingredientes, inventores e efeitos colaterais.</Descricao>
       <Pocoes />
     </Secao>
   );

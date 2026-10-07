@@ -1,4 +1,4 @@
-// Páginas do site: usadas na barra de navegação e nos "portais" da página inicial.
+// usada na barra de navegação e nos atalhos da página inicial
 // caminho: o que vem depois de "#/" no endereço
 export const paginas = [
   {
@@ -17,12 +17,12 @@ export const paginas = [
     caminho: 'feiticos',
     titulo: 'Feitiços',
     icone: '✨',
-    descricao: 'Pesquise os 306 feitiços por nome, encantamento ou tipo.',
+    descricao: 'Pesquise os feitiços por nome, encantamento ou tipo.',
   },
   {
     caminho: 'pocoes',
     titulo: 'Poções',
     icone: '⚗️',
-    descricao: 'Explore 145 poções com ingredientes, inventores e dificuldade.',
+    descricao: 'Explore as poções com ingredientes, inventores e dificuldade.',
   },
 ];

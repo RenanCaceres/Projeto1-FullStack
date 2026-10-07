@@ -1,3 +1,4 @@
+// disponível em todos os styled-components via ThemeProvider (main.jsx)
 export const tema = {
   cores: {
     fundo: '#0f0e17',
@@ -8,7 +9,7 @@ export const tema = {
     destaque: '#d4af37', // dourado
   },
 
-  // cores de cada casa, usadas nos cards e no resultado do quiz
+  // as chaves são iguais ao "name" que a API devolve
   casas: {
     Gryffindor: '#ae0001',
     Hufflepuff: '#ecb939',
@@ -22,12 +23,4 @@ export const tema = {
   },
 
   raio: '8px',
-
-  // ritmo padrão das animações e transições
-  animacao: {
-    rapida: '0.2s',
-    normal: '0.5s',
-    lenta: '1s',
-    curva: 'cubic-bezier(0.22, 1, 0.36, 1)', // começa rápido e desacelera no fim
-  },
 };

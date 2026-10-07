@@ -1,5 +1,5 @@
-// A API devolve tudo em inglês. Aqui ficam as traduções dos valores fixos
-// (os nomes "Chivalary", "Inteligence" e "Selfpreservation" vêm escritos assim da API).
+// a API devolve tudo em inglês
+// "Chivalary", "Inteligence" e "Selfpreservation" vêm escritos errado da própria API
 
 export const qualidades = {
   Courage: 'Coragem',
@@ -56,12 +56,12 @@ export const dificuldades = {
   Unknown: 'Desconhecida',
 };
 
-// devolve a tradução ou, se não houver, o próprio texto da API
+// sem tradução cadastrada: mostra o texto original da API
 export function traduzir(dicionario, valor) {
   return dicionario[valor] ?? valor;
 }
 
-// "Minerva McGonagall, Godric Gryffindor": junta os nomes ignorando partes vazias
+// [{ firstName, lastName }, ...] -> "Minerva McGonagall, Godric Gryffindor"
 export function nomesDePessoas(pessoas = []) {
   return pessoas
     .map(p => [p.firstName, p.lastName].filter(Boolean).join(' '))

@@ -1,95 +1,22 @@
-import { useId, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { getPocoes } from '../services/hogwartsService';
 import { useApi } from '../hooks/useApi';
 import { useDebounce } from '../hooks/useDebounce';
 import { dificuldades, nomesDePessoas, traduzir } from '../utils/traducoes';
-import { aparecerSubindo } from '../styles/animacoes';
-import {
-  Aviso,
-  BotaoMais,
-  CampoBusca,
-  Contagem,
-  Filtros,
-  GradeCards,
-  Pilula,
-} from './Controles';
+import { Aviso } from './Layout';
+import { BotaoMais, CampoBusca, Card, Contagem, Filtros, GradeCards, Selecao } from './Controles';
 
 const POR_PAGINA = 12;
 
-// ordem dos filtros e cor do selo de cada dificuldade
-const NIVEIS = [
-  ['Beginner', '#3fbf6f'],
-  ['Moderate', '#ecb939'],
-  ['Advanced', '#e23b3b'],
-  ['OrdinaryWizardingLevel', '#4a7dff'],
-  ['OneOfAKind', '#9b59d0'],
-  ['Unknown', '#7d7789'],
-];
-const corDoNivel = Object.fromEntries(NIVEIS);
-
-// os cards abertos não esticam os vizinhos da mesma linha
-const Grade = styled(GradeCards)`
-  align-items: start;
-`;
-
-const Card = styled.article`
-  padding: 18px;
-  background: ${({ theme }) => theme.cores.fundo};
-  border: 1px solid ${({ theme }) => theme.cores.borda};
-  border-left: 4px solid ${({ $cor }) => $cor};
-  border-radius: ${({ theme }) => theme.raio};
-
-  /* Animação feita com auxílio de IA (Claude) */
-  animation: ${aparecerSubindo} ${({ theme }) => theme.animacao.normal}
-    ${({ theme }) => theme.animacao.curva} backwards;
-  animation-delay: ${({ $indice }) => ($indice % POR_PAGINA) * 0.04}s;
-
-  h3 {
-    margin: 8px 0 6px;
-    font-size: 1.1rem;
-  }
-`;
-
-const Selo = styled.span`
-  display: inline-block;
+const Selo = styled.small`
   padding: 2px 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  border: 1px solid ${({ theme }) => theme.cores.destaque};
   border-radius: 999px;
-  color: ${({ $cor }) => $cor};
-  background: ${({ $cor }) => $cor}22;
-  border: 1px solid ${({ $cor }) => $cor};
-`;
-
-const Efeito = styled.p`
-  margin: 0;
-  color: ${({ $vazio, theme }) => ($vazio ? theme.cores.textoSuave : theme.cores.texto)};
-`;
-
-const BotaoDetalhes = styled.button`
-  margin: 12px 0 0;
-  padding: 6px 14px;
-  font-size: 0.85rem;
-`;
-
-// Animação feita com auxílio de IA (Claude)
-// abre e fecha os detalhes animando a altura: a linha da grade vai de 0fr a 1fr
-const Gaveta = styled.div`
-  display: grid;
-  grid-template-rows: ${({ $aberta }) => ($aberta ? '1fr' : '0fr')};
-  opacity: ${({ $aberta }) => ($aberta ? 1 : 0)};
-  transition:
-    grid-template-rows ${({ theme }) => theme.animacao.normal} ${({ theme }) => theme.animacao.curva},
-    opacity ${({ theme }) => theme.animacao.normal};
-
-  > div {
-    overflow: hidden;
-  }
+  color: ${({ theme }) => theme.cores.destaque};
 `;
 
 const Detalhes = styled.dl`
-  margin: 12px 0 0;
   font-size: 0.9rem;
 
   dt {
@@ -103,104 +30,66 @@ const Detalhes = styled.dl`
   }
 `;
 
-function CardPocao({ pocao, indice }) {
+// componente separado porque cada card precisa do seu próprio "aberta"
+function CardPocao({ pocao }) {
   const [aberta, setAberta] = useState(false);
-  const idDetalhes = useId();
-  const cor = corDoNivel[pocao.difficulty] ?? corDoNivel.Unknown;
 
-  // só os campos que a API preencheu para esta poção
-  const detalhes = [
-    ['Ingredientes', (pocao.ingredients ?? []).map(i => i.name).join(', ')],
-    ['Inventores', nomesDePessoas(pocao.inventors)],
-    ['Fabricante', pocao.manufacturer],
-    ['Efeitos colaterais', pocao.sideEffects],
-    ['Características', pocao.characteristics],
-    ['Tempo de preparo', pocao.time],
-  ].filter(([, valor]) => valor);
+  const ingredientes = (pocao.ingredients ?? []).map(i => i.name).join(', '); // algumas vêm sem a lista
+  const inventores = nomesDePessoas(pocao.inventors);
 
   return (
-    <Card $cor={cor} $indice={indice}>
-      <Selo $cor={cor}>{traduzir(dificuldades, pocao.difficulty)}</Selo>
+    <Card>
+      <Selo>{traduzir(dificuldades, pocao.difficulty)}</Selo>
       <h3>{pocao.name}</h3>
-      <Efeito $vazio={!pocao.effect}>{pocao.effect || 'Efeito não informado.'}</Efeito>
+      <p>{pocao.effect || 'Efeito não informado.'}</p>
 
-      {detalhes.length > 0 && (
-        <>
-          <BotaoDetalhes
-            aria-expanded={aberta}
-            aria-controls={idDetalhes}
-            onClick={() => setAberta(a => !a)}
-          >
-            {aberta ? 'Fechar detalhes' : 'Ver detalhes'}
-          </BotaoDetalhes>
+      <button onClick={() => setAberta(!aberta)}>
+        {aberta ? 'Fechar detalhes' : 'Ver detalhes'}
+      </button>
 
-          <Gaveta id={idDetalhes} $aberta={aberta} inert={!aberta}>
-            <div>
-              <Detalhes>
-                {detalhes.map(([titulo, valor]) => (
-                  <div key={titulo}>
-                    <dt>{titulo}</dt>
-                    <dd>{valor}</dd>
-                  </div>
-                ))}
-              </Detalhes>
-            </div>
-          </Gaveta>
-        </>
+      {aberta && (
+        <Detalhes>
+          <dt>Ingredientes</dt>
+          <dd>{ingredientes || 'Não informado'}</dd>
+          <dt>Inventores</dt>
+          <dd>{inventores || 'Não informado'}</dd>
+          <dt>Efeitos colaterais</dt>
+          <dd>{pocao.sideEffects || 'Não informado'}</dd>
+          <dt>Tempo de preparo</dt>
+          <dd>{pocao.time || 'Não informado'}</dd>
+        </Detalhes>
       )}
     </Card>
   );
 }
 
 function Pocoes() {
-  const { dados, carregando, erro, tentarDeNovo } = useApi(getPocoes);
+  const { dados: pocoes, carregando, erro, tentarDeNovo } = useApi(getPocoes);
   const [busca, setBusca] = useState('');
   const [nivel, setNivel] = useState('');
   const [limite, setLimite] = useState(POR_PAGINA);
-  const termo = useDebounce(busca.trim().toLowerCase());
+  const termo = useDebounce(busca.toLowerCase());
 
-  // em ordem alfabética, com as poções que têm efeito descrito primeiro
-  const ordenadas = useMemo(() => {
-    if (!dados) return [];
-    return [...dados].sort(
-      (a, b) => Boolean(b.effect) - Boolean(a.effect) || a.name.localeCompare(b.name)
-    );
-  }, [dados]);
+  const filtradas = useMemo(() => {
+    if (!pocoes) return [];
 
-  // quantas poções existem em cada dificuldade (mostrado nos filtros)
-  const totalPorNivel = useMemo(() => {
-    const total = {};
-    ordenadas.forEach(p => {
-      total[p.difficulty] = (total[p.difficulty] || 0) + 1;
+    return pocoes.filter(p => {
+      const nivelCerto = nivel === '' || p.difficulty === nivel;
+      const achouTexto =
+        p.name?.toLowerCase().includes(termo) || p.effect?.toLowerCase().includes(termo);
+      return nivelCerto && achouTexto;
     });
-    return total;
-  }, [ordenadas]);
-
-  const filtradas = useMemo(
-    () =>
-      ordenadas.filter(p => {
-        if (nivel && p.difficulty !== nivel) return false;
-        if (!termo) return true;
-        return [p.name, p.effect, ...(p.ingredients ?? []).map(i => i.name)]
-          .some(texto => texto?.toLowerCase().includes(termo));
-      }),
-    [ordenadas, nivel, termo]
-  );
+  }, [pocoes, nivel, termo]);
 
   if (carregando) return <Aviso>Abrindo o livro de poções...</Aviso>;
 
   if (erro) {
     return (
       <>
-        <Aviso role="alert">{erro}</Aviso>
+        <Aviso>{erro}</Aviso>
         <button onClick={tentarDeNovo}>Tentar de novo</button>
       </>
     );
-  }
-
-  function escolherNivel(novo) {
-    setNivel(novo);
-    setLimite(POR_PAGINA);
   }
 
   const visiveis = filtradas.slice(0, limite);
@@ -209,49 +98,42 @@ function Pocoes() {
     <div>
       <Filtros>
         <CampoBusca
-          placeholder="Buscar poção ou ingrediente"
-          aria-label="Buscar poção"
+          type="search"
+          placeholder="Buscar poção ou efeito"
           value={busca}
           onChange={e => {
             setBusca(e.target.value);
             setLimite(POR_PAGINA);
           }}
         />
+        <Selecao
+          value={nivel}
+          onChange={e => {
+            setNivel(e.target.value);
+            setLimite(POR_PAGINA);
+          }}
+        >
+          <option value="">Todas as dificuldades</option>
+          {Object.keys(dificuldades).map(n => (
+            <option key={n} value={n}>
+              {dificuldades[n]}
+            </option>
+          ))}
+        </Selecao>
       </Filtros>
 
-      <Filtros role="group" aria-label="Filtrar por dificuldade">
-        <Pilula $ativo={nivel === ''} aria-pressed={nivel === ''} onClick={() => escolherNivel('')}>
-          Todas ({ordenadas.length})
-        </Pilula>
-        {NIVEIS.filter(([n]) => totalPorNivel[n]).map(([n, cor]) => (
-          <Pilula
-            key={n}
-            $cor={cor}
-            $ativo={nivel === n}
-            aria-pressed={nivel === n}
-            onClick={() => escolherNivel(n)}
-          >
-            {traduzir(dificuldades, n)} ({totalPorNivel[n]})
-          </Pilula>
-        ))}
-      </Filtros>
-
-      <Contagem aria-live="polite">
+      <Contagem>
         Mostrando {visiveis.length} de {filtradas.length} poções
       </Contagem>
 
-      {filtradas.length === 0 && <Aviso>Nenhuma poção encontrada.</Aviso>}
-
-      <Grade>
-        {visiveis.map((p, i) => (
-          <CardPocao key={p.id} pocao={p} indice={i} />
+      <GradeCards>
+        {visiveis.map(p => (
+          <CardPocao key={p.id} pocao={p} />
         ))}
-      </Grade>
+      </GradeCards>
 
       {limite < filtradas.length && (
-        <BotaoMais onClick={() => setLimite(n => n + POR_PAGINA)}>
-          Carregar mais
-        </BotaoMais>
+        <BotaoMais onClick={() => setLimite(limite + POR_PAGINA)}>Carregar mais</BotaoMais>
       )}
     </div>
   );
